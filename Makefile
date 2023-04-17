@@ -17,4 +17,4 @@ release:
 	git tag "${PT_VERSION}-${PATCH_VERSION}"
 	git push --tags
 build: lint
-	docker buildx build --progress "${DOCKER_PROGRESS}" --tag "$(shell git describe --tags)" .
+	docker buildx build --progress "${DOCKER_PROGRESS}" --tag "${DOCKER_IMAGE}:$(shell git describe --tags)" .
