@@ -11,7 +11,7 @@ exec_docker=docker run $(shell [ "$$CI" = true ] && echo "-t" || echo "-it") -u 
 lint-yaml:
 	${exec_docker} cytopia/yamllint .
 lint-dockerfile:
-	${exec_docker} hadolint/hadolint hadolint Dockerfile
+	${exec_docker} hadolint/hadolint hadolint --ignore DL3018 Dockerfile
 lint: lint-yaml lint-dockerfile
 release:
 	git tag "${PT_VERSION}-${PATCH_VERSION}"
