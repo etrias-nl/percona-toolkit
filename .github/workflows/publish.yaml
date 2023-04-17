@@ -3,7 +3,7 @@ name: Publish
 'on':
     push:
         tags:
-            - "v*.*.*"
+            - "*.*.*-*"
 
 env:
     DOCKER_IMAGE: "etriasnl/percona-toolkit"
