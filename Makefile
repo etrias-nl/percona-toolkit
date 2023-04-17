@@ -8,7 +8,13 @@ PATCH_VERSION=$$(($(shell curl -sS "https://hub.docker.com/v2/repositories/${DOC
 
 exec_docker=docker run $(shell [ "$$CI" = true ] && echo "-t" || echo "-it") -u "$(shell id -u):$(shell id -g)" --rm -v "$(shell pwd):/app" -w /app
 
-lint:
+lint-yaml:
+	${exec_docker} cytopia/yamllint .
+lint-dockerfile:
 	${exec_docker} hadolint/hadolint hadolint Dockerfile
+lint: lint-yaml lint-dockerfile
+release:
+	git tag "${PT_VERSION}-${PATCH_VERSION}"
+	git push --tags
 build: lint
 	docker buildx build --progress "${DOCKER_PROGRESS}" --tag "$(shell git describe --tags)" .
