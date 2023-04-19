@@ -1,6 +1,9 @@
 MAKEFLAGS += --warn-undefined-variables --always-make
 .DEFAULT_GOAL := _
 
+IMAGE=$(shell docker run -i --rm mikefarah/yq '.env.DOCKER_IMAGE' < .github/workflows/publish.yaml)
+IMAGE_TAG=${IMAGE}:$(shell git describe --tags)
+
 PT_VERSION=$(shell cat Dockerfile | grep 'ENV PERCONA_TOOLKIT_VERSION' | cut -f3 -d' ')
 
 exec_docker=docker run $(shell [ "$$CI" = true ] && echo "-t" || echo "-it") -u "$(shell id -u):$(shell id -g)" --rm -v "$(shell pwd):/app" -w /app
@@ -14,4 +17,9 @@ release: lint
 	git tag "${PT_VERSION}-$$(($(shell git describe --tags --abbrev=0 | cut -f2 -d '-') + 1))"
 	git push --tags
 build: lint
-	docker buildx build --load --tag "$(shell ${exec_docker} mikefarah/yq e '.env.DOCKER_IMAGE' .github/workflows/publish.yaml):$(shell git describe --tags)" .
+	docker buildx build --load --tag "${IMAGE_TAG}" .
+cli: clean build
+	docker exec -it "$(shell docker run -it -d "${IMAGE_TAG}")" sh
+clean:
+	docker rm $(shell docker ps -aq -f "ancestor=${IMAGE_TAG}") --force || true
+	docker rmi $(shell docker images -q "${IMAGE}") --force || true
