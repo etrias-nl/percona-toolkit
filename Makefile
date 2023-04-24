@@ -6,7 +6,7 @@ IMAGE_TAG=${IMAGE}:$(shell git describe --tags --exact-match || git branch --sho
 
 PT_VERSION=$(shell cat Dockerfile | grep 'ENV PERCONA_TOOLKIT_VERSION' | cut -f3 -d' ')
 
-exec_docker=docker run $(shell [ "$$CI" = true ] && echo "-t" || echo "-it") -u "$(shell id -u):$(shell id -g)" --rm -v "$(shell pwd):/app" -w /app
+exec_docker=docker run $(shell [ "$$CI" = true ] && echo "-t" || echo "-it") -e CI -u "$(shell id -u):$(shell id -g)" --rm -v "$(shell pwd):/app" -w /app
 
 lint-yaml:
 	${exec_docker} cytopia/yamllint .
