@@ -2,7 +2,7 @@ MAKEFLAGS += --warn-undefined-variables --always-make
 .DEFAULT_GOAL := _
 
 IMAGE=$(shell docker run -i --rm mikefarah/yq '.env.DOCKER_IMAGE' < .github/workflows/publish.yaml)
-IMAGE_TAG=${IMAGE}:$(shell git describe --tags --exact-match || git branch --show-current || git rev-parse --short HEAD)
+IMAGE_TAG=${IMAGE}:$(shell git describe --tags --exact-match || git symbolic-ref --short HEAD || git rev-parse --short HEAD)
 
 PT_VERSION=$(shell cat Dockerfile | grep 'ENV PERCONA_TOOLKIT_VERSION' | cut -f3 -d' ')
 
