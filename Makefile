@@ -27,4 +27,4 @@ clean:
 	docker rm $(shell docker ps -aq -f "ancestor=${IMAGE_TAG}") --force || true
 	docker rmi $(shell docker images -q "${IMAGE}") --force || true
 test: build
-	docker run --rm -it "${IMAGE_TAG}" /usr/local/bin/pt-online-schema-change --version
+	docker run --rm "${IMAGE_TAG}" /usr/local/bin/pt-online-schema-change --version
